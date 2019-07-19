@@ -1,0 +1,7 @@
+Package: easy-theme-changer
+Priority: optional
+Section: urils
+Maintainer: Serene Team Hayao0819 <serenelinux.spt@gmail.com>
+Architecture: amd64
+Version: 1.0.0
+Description: This script can easily switch between dark and light themes.

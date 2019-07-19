@@ -1,0 +1,17 @@
+#!/bin/bash
+
+. /etc/easy-theme-changer/ThemeName
+
+#Debug
+#LightThemeName="Serene-light"
+#DarkThemeName="Serene-dark"
+
+function theme-change () {
+    xfconf-query -c xsettings -p /Net/ThemeName -s $@
+}
+
+ThemeName=$(xfconf-query -c xsettings -p /Net/ThemeName)
+case "$ThemeName" in
+    "$DarkThemeName" ) theme-change $LightThemeName ;;
+    "$LightThemeName" ) theme-change $DarkThemeName ;;
+esac
