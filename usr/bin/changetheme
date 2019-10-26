@@ -1,17 +1,20 @@
 #!/bin/bash
 
-. /etc/easy-theme-changer/ThemeName
+if [[ -f /etc/easy-theme-changer/ThemeName ]]; then
+    source /etc/easy-theme-changer/ThemeName
+else
+    LightThemeName="Adapta-Nokto-Eta"
+    DarkThemeName="Adapta-Eta"
+fi
 
-#Debug
-#LightThemeName="Serene-light"
-#DarkThemeName="Serene-dark"
 
-function theme-change () {
+function change_theme () {
     xfconf-query -c xsettings -p /Net/ThemeName -s $@
 }
 
-ThemeName=$(xfconf-query -c xsettings -p /Net/ThemeName)
-case "$ThemeName" in
-    "$DarkThemeName" ) theme-change $LightThemeName ;;
-    "$LightThemeName" ) theme-change $DarkThemeName ;;
+CurrentThemeName=$(xfconf-query -c xsettings -p /Net/ThemeName)
+case "$CurrentThemeName" in
+    "$DarkThemeName" ) change_theme $LightThemeName ;;
+    "$LightThemeName" ) change_theme $DarkThemeName ;;
+    * ) change_theme $DarkThemeName
 esac
