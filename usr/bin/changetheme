@@ -4,7 +4,9 @@ if [[ -f /etc/easy-theme-changer/ThemeName ]]; then
     source /etc/easy-theme-changer/ThemeName
 else
     Light_Theme_Name="Adapta-Nokto-Eta"
+    Light_Window_Theme_Name="Adapta"
     Dark_Theme_Name="Adapta-Eta"
+    Dark_Window_Theme_Name="Adapta"
 fi
 
 
@@ -18,10 +20,12 @@ function change_window_theme () {
 
 change_light () {
     change_theme $Light_Theme_Name
+    change_window_theme $Light_Window_Theme_Name
 }
 
 function chamge_dark () {
     change_theme $Dark_Theme_Name
+    change_window_theme $Dark_Window_Theme_Name
 }
 
 CurrentThemeName=$(xfconf-query -c xsettings -p /Net/ThemeName)
