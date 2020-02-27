@@ -1,3 +1,0 @@
-#!/bin/bash
-chmod 755 /usr/bin/easy-theme-changer
-chmod -R 755 /etc/easy-theme-changer
