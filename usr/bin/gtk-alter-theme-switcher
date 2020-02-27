@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-config=/etc/alter-theme-changer.
+config=/etc/alter-theme-changer
 
 # ウィンドウの基本型
 function window () {
@@ -48,7 +48,8 @@ function info () {
 }
 
 function setting () {
-    select_light () {
+    set -e
+    function select_light () {
         local theme
         window \
             --list \
@@ -66,7 +67,7 @@ function setting () {
                 done
             )"
     }
-    select_dark () {
+    function select_dark () {
         local theme
         window \
             --list \
@@ -85,7 +86,7 @@ function setting () {
             )"
     }
 
-    select_light_window () {
+    function select_light_window () {
         local theme
         window \
             --list \
@@ -104,7 +105,7 @@ function setting () {
             )"
     }
 
-    select_dark_window () {
+    function select_dark_window () {
         local theme
         window \
             --list \
@@ -122,7 +123,25 @@ function setting () {
                 done
             )"
     }
+
+    Light=$(select_light)
+    Dark=$(select_dark)
+    Light_Window=$(select_light_window)
+    Dark_Window=$(select_dark_window)
+
+    if [[ -f ${config} ]]; then
+        rm ${config}
+    fi
+    echo $Light >> ${config}
+    echo $Dark >> ${config}
+    echo $Light_Window >> ${config}
+    echo $Dark_Window >> ${config}
+    set +e
     
+}
+
+function edit_config () {
+    :
 }
 
 function top () {
@@ -134,6 +153,7 @@ function top () {
         --ok-label="終了する" \
         --extra-button='テーマを切り替える' \
         --extra-button='テーマを設定する' \
+        --extra-buttom='設定ファイルを編集する'
         --width="200" \
         --height="120"
     )
@@ -146,6 +166,7 @@ function top () {
     case ${run} in
         "テーマを切り替える") alter-theme-switcher ;;
         "テーマを設定する") setting ;;
+        "設定ファイルを編集する" ) edit_config ;;
     esac
 }
 

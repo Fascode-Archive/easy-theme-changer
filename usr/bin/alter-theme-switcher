@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-if [[ -f /etc/alter-theme-switcher.conf ]]; then
-    source /etc/alter-theme-switcher.conf
+if [[ -f /etc/alter-theme-switcher ]]; then
+    source /etc/alter-theme-switcher
 else
     Light="Materia-light-compact"
     Light_Window="Materia-light-compact"
