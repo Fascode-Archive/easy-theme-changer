@@ -1,10 +1,3 @@
-Easy-Theme-Changer
-===============
-
-Xfceのダークテーマとライトテーマをコマンドで一発で切り替えられるようにするスクリプトです  
-SereneLinuxのキーボードショートカット用で使用しようと考えています  
-やろうとしている仕組みは/etc/easy-theme-changer/ThemeNameにダークテーマ、ライトテーマの名前を記述  
-/usr/bin/changethemeで先ほどの設定ファイルを読み込みむ  
-現在のテーマ名をXfconfで取得後にThemeName変数に代入  
-あとは、caseでダークテーマならライトテーマ適用、ライトテーマならダークテーマ適用というふうに分岐させてるだけ  
-設定ファイルを読み込ませるのが人生初なのでおかしい部分などあったら教えてください
+## Alter theme switcher
+It is a script to switch the theme of Xfce4.  
+It has a GUI front end and is easy to use.

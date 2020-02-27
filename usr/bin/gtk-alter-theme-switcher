@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+
+config=/etc/alter-theme-changer.
+
+# ウィンドウの基本型
+function window () {
+    zenity \
+    --title="gtk-alter-theme-switcher" \
+    #--window-icon="$window_icon" \
+    $@
+}
+
+# 読み込みウィンドウ
+function loading () {
+    window \
+        --progress \
+        --auto-close \
+        --pulsate \
+        --width="$1" \
+        --height="$2" \
+        --text="$3"
+}
+
+# エラーウィンドウ
+function error () {
+    window \
+        --error \
+        --width="$1" \
+        --height="$2" \
+        --text="$3"
+}
+
+# 警告ウィンドウ
+function warning () {
+    window \
+        --warning \
+        --width="$1" \
+        --height="$2" \
+        --text="$3"
+}
+
+# 情報ウィンドウ
+function info () {
+    window \
+        --info \
+        --width="$1" \
+        --height="$2" \
+        --text="$3"
+}
+
+function setting () {
+    :
+}
+
+function top () {
+    local exit_code
+    run=$(
+    window \
+        --info \
+        --text="実行する項目を選択してください。" \
+        --ok-label="終了する" \
+        --extra-button='テーマを切り替える' \
+        --extra-button='テーマを設定する' \
+        --width="200" \
+        --height="120"
+    )
+    exit_code=${?}
+    case $exit_code in
+                0 ) exit 0 ;;
+                * ) :;;
+    esac
+
+    case ${run} in
+        "テーマを切り替える") alter-theme-switcher ;;
+        "テーマを設定する") setting ;;
+}
+
+top
