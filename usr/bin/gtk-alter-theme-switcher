@@ -6,7 +6,6 @@ config=/etc/alter-theme-changer.
 function window () {
     zenity \
     --title="gtk-alter-theme-switcher" \
-    #--window-icon="$window_icon" \
     $@
 }
 
@@ -49,7 +48,81 @@ function info () {
 }
 
 function setting () {
-    :
+    select_light () {
+        local theme
+        window \
+            --list \
+            --checklist \
+            --column="選択" \
+            --column="テーマ" \
+            --width="900" \
+            --height="500" \
+            --text="ライトテーマを選択してください。" \
+            "$(
+                for theme in $(ls /usr/share/themes/); do
+                    if [[ -f "/usr/share/themes/${theme}/index.theme" ]]; then
+                        echo "${theme}"
+                    fi
+                done
+            )"
+    }
+    select_dark () {
+        local theme
+        window \
+            --list \
+            --checklist \
+            --column="選択" \
+            --column="テーマ" \
+            --width="900" \
+            --height="500" \
+            --text="ダークテーマを選択してください。" \
+            "$(
+                for theme in $(ls /usr/share/themes/); do
+                    if [[ -f "/usr/share/themes/${theme}/index.theme" ]]; then
+                        echo "${theme}"
+                    fi
+                done
+            )"
+    }
+
+    select_light_window () {
+        local theme
+        window \
+            --list \
+            --checklist \
+            --column="選択" \
+            --column="テーマ" \
+            --width="900" \
+            --height="500" \
+            --text="ウィンドウライトテーマを選択してください。" \
+            "$(
+                for theme in $(ls /usr/share/themes/); do
+                    if [[ -d "/usr/share/themes/${theme}/xfwm4/" ]]; then
+                        echo "${theme}"
+                    fi
+                done
+            )"
+    }
+
+    select_dark_window () {
+        local theme
+        window \
+            --list \
+            --checklist \
+            --column="選択" \
+            --column="テーマ" \
+            --width="900" \
+            --height="500" \
+            --text="ウィンドウダークテーマを選択してください。" \
+            "$(
+                for theme in $(ls /usr/share/themes/); do
+                    if [[ -d "/usr/share/themes/${theme}/xfwm4/" ]]; then
+                        echo "${theme}"
+                    fi
+                done
+            )"
+    }
+    
 }
 
 function top () {
@@ -73,6 +146,7 @@ function top () {
     case ${run} in
         "テーマを切り替える") alter-theme-switcher ;;
         "テーマを設定する") setting ;;
+    esac
 }
 
 top
