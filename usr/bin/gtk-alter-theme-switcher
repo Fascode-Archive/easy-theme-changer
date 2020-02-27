@@ -141,7 +141,18 @@ function setting () {
 }
 
 function edit_config () {
-    :
+    function edit_window () {
+        window \
+            --text-info \
+            --filename=${config} \
+            --editable \
+            > ${config}
+    }
+    if [[ -w ${config} ]]; then
+        edit_window
+    else
+        error 500 100 "書き込み権限がありません。"
+    fi
 }
 
 function top () {
@@ -153,7 +164,7 @@ function top () {
         --ok-label="終了する" \
         --extra-button='テーマを切り替える' \
         --extra-button='テーマを設定する' \
-        --extra-buttom='設定ファイルを編集する'
+        --extra-button='設定ファイルを編集する' \
         --width="200" \
         --height="120"
     )
