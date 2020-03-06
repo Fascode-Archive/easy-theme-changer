@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
 
-if [[ -f /etc/alter-theme-switcher ]]; then
-    source /etc/alter-theme-switcher
-else
-    Light="Materia-light-compact"
-    Light_Window="Materia-light-compact"
-    Dark="Materia-dark-compact"
-    Dark_Window="Materia-dark-compact"
+config=~/.alter-theme-changer
+
+
+Light="Materia-light-compact"
+Light_Window="Materia-light-compact"
+Dark="Materia-dark-compact"
+Dark_Window="Materia-dark-compact"
+
+if [[ -f ${config} ]]; then
+    source ${config}
 fi
 
 function _usage () {
@@ -25,6 +28,32 @@ function _usage () {
     exit ${1}
 }
 
+function save () {
+    if [[ -f ${config} ]]; then
+        rm ${config}
+    fi
+    local write
+    function write () {
+        echo -ne "$@" >> ${config}
+    }
+    write "# These files are generated automatically."
+    write "\n"
+    write '# The four variables are saved, but the other comments are not saved.'
+    write "\n"
+    write 'Light='
+    write ${Light}
+    write "\n"
+    write 'Dark='
+    write ${Dark}
+    write "\n"
+    write 'Light_Window='
+    write ${Light_Window}
+    write "\n"
+    write 'Dark_Window='
+    write ${Dark_Window}
+    write "\n"
+}
+
 while getopts 'a:i:d:l:h' arg; do
     case "${arg}" in
         a) Dark_Window=${OPTARG} ;;
@@ -34,6 +63,8 @@ while getopts 'a:i:d:l:h' arg; do
         h) _usage ;;
     esac
 done
+
+save
 
 function change_theme () {
     xfconf-query -c xsettings -p /Net/ThemeName -s ${@}

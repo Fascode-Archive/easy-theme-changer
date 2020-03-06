@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-config=/etc/alter-theme-changer
+config=~/.alter-theme-changer
 
 # ウィンドウの基本型
 function window () {
@@ -129,13 +129,34 @@ function setting () {
     Light_Window=$(select_light_window)
     Dark_Window=$(select_dark_window)
 
-    if [[ -f ${config} ]]; then
-        rm ${config}
-    fi
-    echo $Light >> ${config}
-    echo $Dark >> ${config}
-    echo $Light_Window >> ${config}
-    echo $Dark_Window >> ${config}
+    local save
+    function save () {
+        if [[ -f ${config} ]]; then
+            rm ${config}
+        fi
+        local write
+        function write () {
+            echo -ne "$@" >> ${config}
+        }
+        write "# These files are generated automatically."
+        write "\n"
+        write '# The four variables are saved, but the other comments are not saved.'
+        write "\n"
+        write 'Light='
+        write ${Light}
+        write "\n"
+        write 'Dark='
+        write ${Dark}
+        write "\n"
+        write 'Light_Window='
+        write ${Light_Window}
+        write "\n"
+        write 'Dark_Window='
+        write ${Dark_Window}
+        write "\n"
+    }
+
+    save
     set +e
     
 }
