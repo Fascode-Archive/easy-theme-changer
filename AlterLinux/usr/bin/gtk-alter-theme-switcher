@@ -1,0 +1,205 @@
+#!/usr/bin/env bash
+
+config=~/.alter-theme-changer
+
+# ウィンドウの基本型
+function window () {
+    zenity \
+    --title="gtk-alter-theme-switcher" \
+    $@
+}
+
+# 読み込みウィンドウ
+function loading () {
+    window \
+        --progress \
+        --auto-close \
+        --pulsate \
+        --width="$1" \
+        --height="$2" \
+        --text="$3"
+}
+
+# エラーウィンドウ
+function error () {
+    window \
+        --error \
+        --width="$1" \
+        --height="$2" \
+        --text="$3"
+}
+
+# 警告ウィンドウ
+function warning () {
+    window \
+        --warning \
+        --width="$1" \
+        --height="$2" \
+        --text="$3"
+}
+
+# 情報ウィンドウ
+function info () {
+    window \
+        --info \
+        --width="$1" \
+        --height="$2" \
+        --text="$3"
+}
+
+function setting () {
+    set -e
+    function select_light () {
+        local theme
+        window \
+            --list \
+            --checklist \
+            --column="選択" \
+            --column="テーマ" \
+            --width="900" \
+            --height="500" \
+            --text="ライトテーマを選択してください。" \
+            "$(
+                for theme in $(ls /usr/share/themes/); do
+                    if [[ -f "/usr/share/themes/${theme}/index.theme" ]]; then
+                        echo "${theme}"
+                    fi
+                done
+            )"
+    }
+    function select_dark () {
+        local theme
+        window \
+            --list \
+            --checklist \
+            --column="選択" \
+            --column="テーマ" \
+            --width="900" \
+            --height="500" \
+            --text="ダークテーマを選択してください。" \
+            "$(
+                for theme in $(ls /usr/share/themes/); do
+                    if [[ -f "/usr/share/themes/${theme}/index.theme" ]]; then
+                        echo "${theme}"
+                    fi
+                done
+            )"
+    }
+
+    function select_light_window () {
+        local theme
+        window \
+            --list \
+            --checklist \
+            --column="選択" \
+            --column="テーマ" \
+            --width="900" \
+            --height="500" \
+            --text="ウィンドウライトテーマを選択してください。" \
+            "$(
+                for theme in $(ls /usr/share/themes/); do
+                    if [[ -d "/usr/share/themes/${theme}/xfwm4/" ]]; then
+                        echo "${theme}"
+                    fi
+                done
+            )"
+    }
+
+    function select_dark_window () {
+        local theme
+        window \
+            --list \
+            --checklist \
+            --column="選択" \
+            --column="テーマ" \
+            --width="900" \
+            --height="500" \
+            --text="ウィンドウダークテーマを選択してください。" \
+            "$(
+                for theme in $(ls /usr/share/themes/); do
+                    if [[ -d "/usr/share/themes/${theme}/xfwm4/" ]]; then
+                        echo "${theme}"
+                    fi
+                done
+            )"
+    }
+
+    Light=$(select_light)
+    Dark=$(select_dark)
+    Light_Window=$(select_light_window)
+    Dark_Window=$(select_dark_window)
+
+    local save
+    function save () {
+        if [[ -f ${config} ]]; then
+            rm ${config}
+        fi
+        local write
+        function write () {
+            echo -ne "$@" >> ${config}
+        }
+        write "# These files are generated automatically."
+        write "\n"
+        write '# The four variables are saved, but the other comments are not saved.'
+        write "\n"
+        write 'Light='
+        write ${Light}
+        write "\n"
+        write 'Dark='
+        write ${Dark}
+        write "\n"
+        write 'Light_Window='
+        write ${Light_Window}
+        write "\n"
+        write 'Dark_Window='
+        write ${Dark_Window}
+        write "\n"
+    }
+
+    save
+    set +e
+    
+}
+
+function edit_config () {
+    function edit_window () {
+        window \
+            --text-info \
+            --filename=${config} \
+            --editable \
+            > ${config}
+    }
+    if [[ -w ${config} ]]; then
+        edit_window
+    else
+        error 500 100 "書き込み権限がありません。"
+    fi
+}
+
+function top () {
+    local exit_code
+    run=$(
+    window \
+        --info \
+        --text="実行する項目を選択してください。" \
+        --ok-label="終了する" \
+        --extra-button='テーマを切り替える' \
+        --extra-button='テーマを設定する' \
+        --extra-button='設定ファイルを編集する' \
+        --width="200" \
+        --height="120"
+    )
+    exit_code=${?}
+    case $exit_code in
+                0 ) exit 0 ;;
+                * ) :;;
+    esac
+
+    case ${run} in
+        "テーマを切り替える") alter-theme-switcher ;;
+        "テーマを設定する") setting ;;
+        "設定ファイルを編集する" ) edit_config ;;
+    esac
+}
+
+top

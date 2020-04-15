@@ -1,0 +1,107 @@
+#!/usr/bin/env bash
+
+config=~/.alter-theme-changer
+
+
+Light="Materia-light-compact"
+Light_Window="Materia-light-compact"
+Dark="Materia-dark-compact"
+Dark_Window="Materia-dark-compact"
+
+if [[ -f ${config} ]]; then
+    source ${config}
+fi
+
+function _usage () {
+    echo "usage ${0} [options]"
+    echo
+    echo " General options:"
+    echo "    -a <theme>         Set dark theme for window."
+    echo "                       Default: ${Dark_Window}"
+    echo "    -i <theme>         Set light theme for window."
+    echo "                       Default: ${Light_Window}"
+    echo "    -d <theme>         Set dark theme."
+    echo "                       Default: ${Dark}"
+    echo "    -l <theme>         Set light theme."
+    echo "                       Default: ${Light}"
+    echo "    -h                 Show this help."
+    exit ${1}
+}
+
+function save () {
+    if [[ -f ${config} ]]; then
+        rm ${config}
+    fi
+    local write
+    function write () {
+        echo -ne "$@" >> ${config}
+    }
+    write "# These files are generated automatically."
+    write "\n"
+    write '# The four variables are saved, but the other comments are not saved.'
+    write "\n"
+    write 'Light='
+    write ${Light}
+    write "\n"
+    write 'Dark='
+    write ${Dark}
+    write "\n"
+    write 'Light_Window='
+    write ${Light_Window}
+    write "\n"
+    write 'Dark_Window='
+    write ${Dark_Window}
+    write "\n"
+}
+
+while getopts 'a:i:d:l:h' arg; do
+    case "${arg}" in
+        a) Dark_Window=${OPTARG} ;;
+        i) Light_Window=${OPTARG} ;;
+        d) Dark=${OPTARG} ;;
+        l) Light=${OPTARG} ;;
+        h) _usage ;;
+    esac
+done
+
+save
+
+function change_theme () {
+    xfconf-query -c xsettings -p /Net/ThemeName -s ${@}
+}
+
+function change_window_theme () {
+    xfconf-query -c xfwm4 -p /general/theme -s ${@}
+}
+
+function change_light () {
+    change_theme "${Light}"
+
+}
+
+function change_dark () {
+    change_theme "${Dark}"
+}
+
+function change_light_window () {
+    change_window_theme "${Light_Window}"
+}
+
+function change_dark_window () {
+    change_window_theme "${Dark_Window}"
+}
+
+CurrentTheme=$(xfconf-query -c xsettings -p /Net/ThemeName)
+CurrentWindow=$(xfconf-query -c xfwm4 -p /general/theme)
+
+case "$CurrentTheme" in
+    "$Dark"  ) change_light  ;;
+    "$Light" ) change_dark  ;;
+    * ) change_dark ;;
+esac
+
+case "${CurrentWindow}" in
+    "${Dark_Window}"  ) change_light_window ;;
+    "${Light_Window}" ) change_dark_window ;;
+    * ) change_dark_window ;;
+esac
